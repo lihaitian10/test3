@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cncbox.health.dao.HomeDao">
+
+    <!-- 查询包视频-->
+    <sql id="select_video_as_sql">
+        hv.vod_id,hv.level_id,hv.vod_name,hv.first_letter,hv.image,hv.is_charged,hv.rtsp_hd,hv.rtsp_hd2,hv.rtsp_hd3,hv.local_uid,hv.entry_type,hv.time_long
+    </sql>
+
+    <!--查询文章-->
+    <sql id="select_article_as_sql">
+        hi.info_id,hi.level_id,hi.info_name,hi.first_letter,hi.image,hi.is_charged
+    </sql>
+
+    <!--首页推荐图-->
+    <select id="homeRotation" resultType="Rotation">
+        SELECT carous_id,con_id1,con_id2,con_id3,carous_img1,carous_img2,carous_img3,carous_type
+        FROM health_carous
+        WHERE statuz = '1'
+        AND start_time
+        AND start_time &lt; UNIX_TIMESTAMP(NOW())
+        AND end_time &gt; UNIX_TIMESTAMP(NOW())
+        ORDER BY order_code ASC
+    </select>
+
+    <!--  首页内容获取 -->
+    <select id="homeContent" resultType="Home">
+        SELECT id,pck_id,posi_name,posi_image,posi_attr,acti_url
+        FROM health_index
+        ORDER BY order_code ASC
+    </select>
+
+    <!-- 首页内容下栏目获取-->
+    <select id="getSection" resultType="Section">
+        SELECT level_id,parent_level_id,level_name,level_type
+        FROM health_level
+        WHERE
+        parent_level_id = #{selectNumber}
+        AND statuz = '1'
+        ORDER BY order_code ASC
+    </select>
+
+    <!-- 根据栏目查询视频内容-->
+    <select id="sebyleid" resultType="Video">
+        SELECT
+        <include refid="select_video_as_sql"/>
+        FROM health_vod as hv
+        WHERE statuz = '1'
+        AND level_id = #{levelId}
+        ORDER BY order_code ASC
+    </select>
+
+    <!--查询视频总页数-->
+    <select id="sebyleidAll" resultType="Page">
+        SELECT COUNT(vod_id) AS count_notes
+        FROM health_vod
+        WHERE statuz = '1'
+        AND level_id = #{levelId}
+    </select>
+
+    <!-- 根据视频id查询视频信息-->
+    <select id="seVodIdById" resultType="Video">
+        SELECT
+        <include refid="select_video_as_sql"/>
+        FROM health_vod as hv
+        WHERE statuz = '1'
+        AND hv.vod_id=#{selectId}
+    </select>
+
+    <!-- 根据栏目id查询文章-->
+    <select id="getArticleByLeId" resultType="Article">
+        SELECT
+        <include refid="select_article_as_sql"/>
+        FROM health_information AS hi
+        WHERE statuz = '1'
+        AND level_id = #{seleNumber}
+        ORDER BY order_code ASC 
+    </select>
+    
+     <!-- 根据文章id查询内容-->
+    <select id="getArticleIdById" resultType="Article">
+        SELECT
+        <include refid="select_article_as_sql"/>
+        ,info_image,info_content
+        FROM health_information AS hi
+        WHERE statuz = '1'
+        AND info_id = #{seleNumber}
+    </select>
+
+    <!-- 根据栏目id查询文章,总数查询-->
+    <select id="getCountArticleByLeId" resultType="Page">
+        SELECT COUNT(info_id) AS count_notes
+        FROM health_information
+        WHERE statuz = '1'
+        AND level_id = #{seleNumber}
+    </select>
+
+    <!-- 根据栏目id，获取问答-->
+    <select id="getAnswerByLeId" resultType="Answer">
+        SELECT package_id,package_name,first_letter,image,is_charged,introduce,reference
+        FROM health_ques_package
+        WHERE statuz = '1'
+        AND level_id = #{seleNumber}
+        ORDER BY order_code ASC 
+    </select>
+
+    <!-- 根据栏目id,问答总数查询-->
+    <select id="getCountAnswerByLeId" resultType="Page">
+        SELECT COUNT(package_id) AS count_notes
+        FROM health_ques_package
+        WHERE statuz = '1'
+        AND level_id = #{seleNumber}
+    </select>
+
+    <!-- 根据组包id,获取答题问题-->
+    <select id="getAnswerProblem" resultType="AnswerProblem">
+        SELECT h_question.ques_id,h_question.ques_content,h_question.answer1,h_question.answer_content1,h_question.answer2,h_question.answer_content2
+        FROM health_question AS h_question
+        WHERE h_question.statuz = '1'
+        AND h_question.pack_id = #{seleNumber}
+        ORDER BY h_question.order_code ASC
+    </select>
+
+    <!-- 根据包id,查询答题答案-->
+    <select id="getAnswerResult" resultType="AnswerResult">
+        SELECT hqa.answer_id,hqa.answer_content,hqa.ranges
+        FROM health_ques_answer hqa
+        WHERE hqa.statuz = '1'
+        AND hqa.package_id = #{seleNumber}
+        ORDER BY hqa.ranges ASC
+    </select>
+
+
+    <!-- 根据首页id,查询视频内容-->
+    <select id="getVideoPackage" resultType="Video">
+        SELECT
+        <include refid="select_video_as_sql"/>
+        FROM health_package AS hp,health_package_con AS hpc,health_vod AS hv
+        WHERE hp.statuz = '1'
+        AND hp.pck_type = '0'
+        AND hpc.statuz = '1'
+        AND hpc.con_type='0'
+        AND hp.package_id=hpc.package_id
+        AND hv.statuz = '1'
+        AND hpc.con_id = hv.vod_id
+        AND hp.package_id = #{seleNumber}
+        ORDER BY hpc.order_code ASC 
+    </select>
+
+    <!-- 根据首页id,查询视频内容总数-->
+    <select id="getCountVideoPackage" resultType="Page">
+        SELECT count(0) AS count_notes
+        FROM health_package AS hp,health_package_con AS hpc,health_vod AS hv
+        WHERE hp.statuz = '1'
+        AND hp.pck_type = '0'
+        AND hpc.statuz = '1'
+        AND hpc.con_type='0'
+        AND hp.package_id=hpc.package_id
+        AND hv.statuz = '1'
+        AND hpc.con_id = hv.vod_id
+        AND hp.package_id = #{seleNumber}
+    </select>
+
+    <!-- 根据首页包id,查询文章内容-->
+    <select id="getArticlePackage" resultType="Article">
+        SELECT
+        <include refid="select_article_as_sql"/>
+        FROM health_package AS hp,health_package_con AS hpc,health_information AS hi
+        WHERE hp.statuz = '1'
+        AND hp.pck_type = '1'
+        AND hpc.statuz = '1'
+        AND hpc.con_type='1'
+        AND hp.package_id=hpc.package_id
+        AND hi.statuz = '1'
+        AND hpc.con_id = hi.info_id
+        AND hp.package_id = #{seleNumber}
+        ORDER BY hpc.order_code ASC 
+    </select>
+
+    <!-- 根据首页包id,查询文章内容-->
+    <select id="getCountArticlePackage" resultType="Page">
+        SELECT count(0) AS count_notes
+        FROM health_package AS hp,health_package_con AS hpc,health_information AS hi
+        WHERE hp.statuz = '1'
+        AND hp.pck_type = '1'
+        AND hpc.statuz = '1'
+        AND hpc.con_type='1'
+        AND hp.package_id=hpc.package_id
+        AND hi.statuz = '1'
+        AND hpc.con_id = hi.info_id
+        AND hp.package_id = #{seleNumber}
+    </select>
+
+
+    <!-- 根据医生id，获取医生信息-->
+    <select id="getDoctors" resultType="Doctors">
+        SELECT hd.id,hd.doctor_name,hd.image,hd.con_image,hd.introduce
+        FROM health_doctor AS hd
+        WHERE hd.statuz = '1'
+        AND hd.id = #{doctorsId}
+        ORDER BY order_code ASC limit 0,1
+    </select>
+
+    <!-- 根据医生id,获取相关医生视频-->
+    <select id="getDoctorsVideoById" resultType="Video">
+        SELECT
+        <include refid="select_video_as_sql"/>
+        FROM health_doctor_con AS hdc,health_vod hv
+        WHERE hdc.statuz = '1'
+        AND hv.statuz = '1'
+        AND hdc.vod_id = hv.vod_id
+        AND hdc.doctor_id = #{doctorsId}
+        ORDER BY hdc.order_code ASC 
+    </select>
+
+    <!-- 根据医生id,获取相关医生视频总数-->
+    <select id="getCountDoctorsVideoById" resultType="Page">
+        SELECT count(0) AS count_notes
+        FROM health_doctor_con AS hdc,health_vod hv
+        WHERE hdc.statuz = '1'
+        AND hv.statuz = '1'
+        AND hdc.vod_id = hv.vod_id
+        AND hdc.doctor_id = #{doctorsId}
+    </select>
+
+
+</mapper>

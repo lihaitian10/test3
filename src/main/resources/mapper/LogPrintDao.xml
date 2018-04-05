@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cncbox.health.mdao.LogPrintDao">
+
+    <!--日志表 log_health 插入数据-->
+    <insert id="insertLogHealth" parameterType="LogPrintCommon">
+        INSERT INTO log_health(cp_id,pck_id,con_id,level_id,parent_level_id,is_free,type,page_code,statuz,smart_card,client_ip,visit_time,source,area_code)
+        VALUES(0,#{logPrintCommon.pckId},#{logPrintCommon.conId},#{logPrintCommon.levelId},#{logPrintCommon.parentLevelId},#{logPrintCommon.isFree},#{logPrintCommon.type},#{logPrintCommon.pageCode},#{logPrintCommon.statuz},#{logPrintCommon.smartCard},INET_ATON(#{logPrintCommon.clientIp}),UNIX_TIMESTAMP(NOW()),#{logPrintCommon.source},#{logPrintCommon.areaCode})
+    </insert>
+
+    <!--日志表 log_health_collect 插入数据-->
+    <insert id="insertLogHealthCollect" parameterType="LogPrintCommon">
+        INSERT INTO log_health_collect(pack_id,con_id,con_name,con_type,level_id,parent_level_id,is_free,page_code,client_ip,smart_card,visit_time,area_code,source)
+        VALUES(#{logPrintCommon.pckId},#{logPrintCommon.conId},#{logPrintCommon.conName},
+        #{logPrintCommon.type},#{logPrintCommon.levelId},#{logPrintCommon.parentLevelId},#{logPrintCommon.isFree},#{logPrintCommon.pageCode},INET_ATON(#{logPrintCommon.clientIp}),#{logPrintCommon.smartCard},UNIX_TIMESTAMP(NOW()),#{logPrintCommon.areaCode},#{logPrintCommon.source})
+    </insert>
+
+    <!--日志表 log_health_play 插入数据-->
+    <insert id="insertLogHealthPlay" parameterType="LogPrintCommon">
+        INSERT INTO log_health_play(pck_id,con_id,level_id,parent_level_id,type,statuz,is_free,page_code,smart_card,client_ip,visit_time,source,area_code)
+        VALUES(#{logPrintCommon.pckId},#{logPrintCommon.conId},#{logPrintCommon.levelId},#{logPrintCommon.parentLevelId},#{logPrintCommon.type},#{logPrintCommon.statuz},#{logPrintCommon.isFree},#{logPrintCommon.pageCode},#{logPrintCommon.smartCard},INET_ATON(#{logPrintCommon.clientIp}),UNIX_TIMESTAMP(NOW()),#{logPrintCommon.source},#{logPrintCommon.areaCode})
+    </insert>
+
+    <!--日志表 log_health_soso 插入数据-->
+    <insert id="insertLogHealthSoso" parameterType="LogPrintCommon">
+        INSERT INTO log_health_soso(type,name,smart_card,client_ip,view_time,area_code,source)
+        VALUES(#{logPrintCommon.type},#{logPrintCommon.conName},#{logPrintCommon.smartCard},INET_ATON(#{logPrintCommon.clientIp}),UNIX_TIMESTAMP(NOW()),#{logPrintCommon.areaCode},#{logPrintCommon.source})
+    </insert>
+
+</mapper>

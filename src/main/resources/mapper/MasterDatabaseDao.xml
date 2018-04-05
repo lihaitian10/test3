@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cncbox.health.mdao.MasterDatabaseDao">
+
+    <!--视频收藏插入-->
+    <insert id="insertCollectionVideo" parameterType="Video">
+        INSERT INTO health_collect_vod(vod_id,vod_name,level_id,vod_image,last_time,update_time,smart_card,client_ip)
+        VALUES(#{vodId},#{vodName},#{levelId},#{image},0,UNIX_TIMESTAMP(NOW()),#{entryType},INET_ATON(#{localUid}))
+    </insert>
+
+    <!-- 删除收藏视频-->
+    <delete id="deleteCollectionVideoByVS">
+        DELETE FROM health_collect_vod
+        WHERE vod_id = #{vodId}
+        AND smart_card = #{smarCard}
+    </delete>
+
+    <!--文章收藏插入-->
+    <insert id="insertCollectionArticle">
+        INSERT INTO health_collect_info(info_id,info_name,level_id,info_image,update_time,smart_card,client_ip)
+        VALUES(#{article.infoId},#{article.infoName},#{article.levelId},#{article.infoImage},UNIX_TIMESTAMP(NOW()),#{article.image},INET_ATON(#{article.infoContent}))
+    </insert>
+
+    <!-- 删除收藏文章 -->
+    <delete id="deleteCollectionArticleByVS">
+        DELETE FROM health_collect_info
+        WHERE info_id = #{infoId}
+        AND smart_card = #{smarCard}
+    </delete>
+
+</mapper>

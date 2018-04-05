@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cncbox.health.dao.SearchDao">
+
+    <!-- 搜索视频-总数-->
+    <select id="getSearchVideoCount" resultType="Page">
+        SELECT COUNT(hv.vod_id) AS count_notes
+        FROM health_vod hv
+        WHERE hv.statuz = '1'
+        AND hv.first_letter LIKE CONCAT('%', #{values},'%')
+    </select>
+
+    <!--搜索视频-->
+    <select id="getSearchVideo" resultType="Video">
+        SELECT  hv.vod_id,hv.level_id,hv.vod_name,hv.first_letter,hv.image,hv.is_charged,hv.rtsp_hd,hv.rtsp_hd2,hv.rtsp_hd3,hv.local_uid,hv.entry_type,hv.time_long
+        FROM health_vod hv
+        WHERE hv.statuz = '1'
+        AND hv.first_letter LIKE CONCAT('%', #{values},'%')
+        ORDER BY hv.update_time ASC
+    </select>
+
+
+    <!-- 搜索文章-总数-->
+    <select id="getSearchArticleCount" resultType="Page">
+        SELECT COUNT(hi.info_id) AS count_notes
+        FROM health_information hi
+        WHERE statuz = '1'
+        AND hi.first_letter LIKE CONCAT('%', #{values},'%')
+    </select>
+
+    <!-- 搜索文章-->
+    <select id="getSearchArticle" resultType="Article">
+        SELECT hi.info_id,hi.level_id,hi.info_name,hi.first_letter,hi.image,hi.is_charged
+        FROM health_information AS hi
+        WHERE statuz = '1'
+        AND hi.first_letter LIKE CONCAT('%', #{values},'%')
+        ORDER BY hi.update_time ASC 
+    </select>
+
+
+</mapper>
