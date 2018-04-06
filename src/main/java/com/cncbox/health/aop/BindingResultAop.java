@@ -17,7 +17,7 @@ import org.springframework.validation.BindingResult;
 @Component
 @Aspect
 public class BindingResultAop {
-
+    //测试提交
     private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     @Pointcut("execution(* com.cncbox.health.web.*.*(..))")
